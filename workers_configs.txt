@@ -1,0 +1,124 @@
+1. Request to /admin/stats
+2. WAF Rule 1: /api/ bypass → NO (not /api/)
+3. WAF Rule 2: IN traffic → NO (if not from India)
+4. WAF Rule 3: ASN block → NO (if not blocked ASN)
+5. WAF Rule 4: Bad bot → NO (if not bot)
+6. WAF Rule 5: AI bot → NO (if not AI bot)
+7. REACHES WORKER
+8. Worker checks X-Admin-Token
+9. If valid → returns admin data
+10. If invalid → returns 403
+
+
+┌─────────────────────────────────────────┐
+│ Add environment variable                │
+│                                         │
+│ Name:  SECRET_KEY                       │
+│                                         │
+│ Value: [k3Jh8pL2qW9zX7vR5tY1uI0oP6m...]│ ← Paste plain text
+│      (NO quotes around it!)             │
+│                                         │
+│ [Save]                                  │
+└─────────────────────────────────────────┘
+
+┌─────────────────────────────────────────┐  
+│ Add environment variable                │
+│                                         │
+│ Name:  ALLOWED_CLIENTS                  │
+│                                         │
+│ Value: ["client-1", "client-2"]        │ ← Valid JSON array
+│      (JSON format, no outer quotes!)    │
+│                                         │
+│ [Save]                                  │
+└─────────────────────────────────────────┘
+
+┌─────────────────────────────────────────┐
+│ Add environment variable                │
+│                                         │
+│ Name:  AUTH_ENABLED                     │
+│                                         │
+│ Value: true                             │ ← Plain true/false
+│      (NO quotes!)                       │
+│                                         │
+│ [Save]                                  │
+└─────────────────────────────────────────┘
+
+
+SECRET_KEY: Single value → store as text
+
+ALLOWED_CLIENTS: Multiple values → store as JSON array string
+
+
+1. Generate Your Key:
+
+create hmac secret key using this:
+openssl rand -base64 32
+save this key
+
+2. Add to Cloudflare Worker:
+In Worker Dashboard:
+
+Go to your Worker
+
+Click "Settings" → "Variables"
+
+Click "Add variable"
+
+Enter:
+
+Variable name: SECRET_KEY
+
+Value: k3Jh8pL2qW9zX7vR5tY1uI0oP6mN4bV2cS8xG5jH9fD3 (your generated key)
+
+Click "Save"
+
+
+
+3. use routing from workers subdomain to our api.yourdomain.com
+Add Route (Triggers → Add route: api.yourdomain.com/*
+
+
+
+
+┌─────────────────────────────────────────────────────────┐
+│                   PUBLIC INTERNET                        │
+└──────────────────────────┬──────────────────────────────┘
+                           │
+                    https://login.support-noreply.help
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│                CLOUDFLARE EDGE NETWORK                  │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │               WORKER (auth gateway)              │   │
+│  │   1. Receives request                            │   │
+│  │   2. Validates: X-Client-Key, X-Signature,       │   │
+│  │      X-Timestamp, X-Nonce headers                │   │
+│  │   3. If valid → adds X-CDN-Verified headers      │   │
+│  │   4. Forwards to tunnel endpoint                 │   │
+│  └────────────┬─────────────────────────────────────┘   │
+│               │                                         │
+│         https://tunnel-login.support-noreply.help      │
+│               │                                         │
+│               ▼                                         │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │                TUNNEL (cloudflared)              │   │
+│  │   1. Receives request from Worker                │   │
+│  │   2. Routes through secure tunnel                │   │
+│  │   3. Forwards to local server                    │   │
+│  └────────────┬─────────────────────────────────────┘   │
+└───────────────┼─────────────────────────────────────────┘
+                │
+                ▼
+┌─────────────────────────────────────────────────────────┐
+│                 YOUR LOCAL NETWORK                      │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │               LOCAL SERVER                       │   │
+│  │   • Listens on localhost:8080                    │   │
+│  │   • Receives authenticated requests              │   │
+│  │   • Sees X-CDN-Verified header                   │   │
+│  │   • Processes request                            │   │
+│  │   • Returns response                             │   │
+│  └──────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────┘
+

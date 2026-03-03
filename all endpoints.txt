@@ -1,0 +1,117 @@
+all firewalls:
+A waf has 5 rules
+B waf has cdn edge auth workers with key namespace auth with specialized custom urls 
+C custom python reverse proxy on localhost 8083 configured on /opt/reverse-proxy/.json  config apps on reverse proxy
+D last login pages running on differ port 
+
+start tunnel 
+cloudflared tunnel --url http://localhost:8083 --credentials-file /root/.cloudflared/4c2a22a5-6e3c-4dd8-b949-2d6b2405bbeb.json run 16864092-365a-428b-b8d4-46afc93e9c17 &i
+
+start 
+webserver node webserver.js
+
+
+cloudflared tunnel create login-tunnel
+create cname with tunnel id pointing to cdn subdomain in dns > 16864092-365a-428b-b8d4-46afc93e9c17.cfargotunnel.com
+route localhost inside yml
+
+
+create 1 cdn dev subdomain
+support.zvrrobert.workers.dev
+
+create 1 custom subdomain in worker & pages which links to cdn dev subdomain 
+it automatically creates cname and link with dev subdmain like this: 
+worker_dev > login.support-noreply.help
+
+
+create KV and bind:
+add name on namespace & binding
+
+
+
+all endpoints
+Domain/Subdomains:
+Main api subdomain: login.support-noreply.help
+
+Tunnel URL: tunnel-login.support-noreply.help (points to your local server)
+	
+Public URLs: https://login.support-noreply.help/* (via Cloudflare Worker)
+
+
+
+
+
+
+1. Public/No Auth Required:
+/health              - Health check
+/status              - Status endpoint  
+/robots.txt          - Robots file
+
+2. Authentication Endpoints:
+/api/auth/token      - Token generation (POST only)
+/auth/callback       - OAuth-style callback
+/auth/logout         - Logout endpoint
+
+
+3. Admin Endpoints (Protected by Admin Token):
+/admin/stats         - Get system stats
+/admin/clients       - List/manage clients
+/admin/tokens        - Manage tokens
+
+
+4. Main Application (Requires Authentication):
+/                   - Dashboard/home
+/*                  - Any other path
+/dashboard          - Dashboard
+/protected/*        - Any protected content
+
+
+Local Server Endpoints (refined-server.js):
+/                   - Main dashboard
+/health             - Health check
+/robots.txt         - Robots file
+/*                  - Any other path (requires X-CDN headers)
+
+
+custom onetime urls endpoints creators:
+
+Admin POST to: https://login.support-noreply.help/admin/otp/create
+Admin POST to: https://login.support-noreply.help/admin/otp/update
+Admin POST to: https://login.support-noreply.help/admin/otp/revoke
+Admin GET to:  https://login.support-noreply.help/admin/otp/status
+
+
+# 1. Create OTP
+curl -X POST https://login.support-noreply.help/admin/otp/create \
+  -H "X-Admin-Token: $ADMIN_TOKEN" \
+  -d '{
+    "clientId": "client-2",
+    "expiresIn": 500,
+    "maxUses": 1,
+    "redirectPath": "/testing",
+    "customId": "testing"
+  }'
+
+# 2. Check status
+curl -H "X-Admin-Token: $ADMIN_TOKEN" \
+  "https://login.support-noreply.help/admin/otp/status?custom_id=testing"
+
+# 3. Reset uses to 5
+curl -X POST https://login.support-noreply.help/admin/otp/update \
+  -H "X-Admin-Token: $ADMIN_TOKEN" \
+  -d '{"custom_id": "testing", "action": "reset_uses", "value": 1}'
+
+# 4. Extend expiry by 1 hour (3600 seconds)
+curl -X POST https://login.support-noreply.help/admin/otp/update \
+  -H "X-Admin-Token: $ADMIN_TOKEN" \
+  -d '{"custom_id": "test", "action": "extend", "value": 500}'
+
+# 5. Change redirect path
+curl -X POST https://login.support-noreply.help/admin/otp/update \
+  -H "X-Admin-Token: $ADMIN_TOKEN" \
+  -d '{"custom_id": "bakchod_1", "action": "change_path", "value": "/new-path"}'
+
+# 6. Revoke token
+curl -X POST https://login.support-noreply.help/admin/otp/revoke \
+  -H "X-Admin-Token: $ADMIN_TOKEN" \
+  -d '{"custom_id": "bakchod_1"}'
