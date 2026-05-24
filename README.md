@@ -1,4 +1,3 @@
-GateKeeper — Distributed Zero-Trust Edge Access Platform
 ╔══════════════════════════════════════════════════════════════════════════════════════╗
 ║                                                                                      ║
 ║   ██████╗  █████╗ ████████╗███████╗██╗  ██╗███████╗███████╗██████╗ ███████╗██████╗  ║
@@ -16,8 +15,7 @@ GateKeeper — Distributed Zero-Trust Edge Access Platform
 ║   🔑 One-Time Access Engine                                                           ║
 ║   ⚡ Trusted Reverse Proxy Gateway                                                    ║
 ║                                                                                      ║
-╚══════════════════════════════════════════════════════════════════════════════════════╝
-<p align="center"> <img src="https://img.shields.io/badge/Cloudflare-Workers-orange?style=for-the-badge&logo=cloudflare" /> <img src="https://img.shields.io/badge/Python-Reverse_Proxy-blue?style=for-the-badge&logo=python" /> <img src="https://img.shields.io/badge/Node.js-Dashboard-green?style=for-the-badge&logo=node.js" /> <img src="https://img.shields.io/badge/Zero_Trust-Architecture-success?style=for-the-badge" /> <img src="https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=for-the-badge" /> </p>
+╚══════════════════════════════════════════════════════════════════════════════════════╝<p align="center"> <img src="https://img.shields.io/badge/Cloudflare-Workers-orange?style=for-the-badge&logo=cloudflare" /> <img src="https://img.shields.io/badge/Python-Reverse_Proxy-blue?style=for-the-badge&logo=python" /> <img src="https://img.shields.io/badge/Node.js-Dashboard-green?style=for-the-badge&logo=node.js" /> <img src="https://img.shields.io/badge/Zero_Trust-Architecture-success?style=for-the-badge" /> <img src="https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=for-the-badge" /> </p>
 📦 Overview
 
 GateKeeper is a lightweight but enterprise-grade distributed edge authentication and secure application access platform built on top of:
