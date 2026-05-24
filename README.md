@@ -1,3 +1,6 @@
+# GateKeeper — Distributed Zero-Trust Edge Access Platform
+
+```text
 ╔══════════════════════════════════════════════════════════════════════════════════════╗
 ║                                                                                      ║
 ║   ██████╗  █████╗ ████████╗███████╗██╗  ██╗███████╗███████╗██████╗ ███████╗██████╗  ║
@@ -15,21 +18,37 @@
 ║   🔑 One-Time Access Engine                                                           ║
 ║   ⚡ Trusted Reverse Proxy Gateway                                                    ║
 ║                                                                                      ║
-╚══════════════════════════════════════════════════════════════════════════════════════╝<p align="center"> <img src="https://img.shields.io/badge/Cloudflare-Workers-orange?style=for-the-badge&logo=cloudflare" /> <img src="https://img.shields.io/badge/Python-Reverse_Proxy-blue?style=for-the-badge&logo=python" /> <img src="https://img.shields.io/badge/Node.js-Dashboard-green?style=for-the-badge&logo=node.js" /> <img src="https://img.shields.io/badge/Zero_Trust-Architecture-success?style=for-the-badge" /> <img src="https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=for-the-badge" /> </p>
-📦 Overview
+╚══════════════════════════════════════════════════════════════════════════════════════╝
+```
 
-GateKeeper is a lightweight but enterprise-grade distributed edge authentication and secure application access platform built on top of:
+<p align="center">
+  <img src="https://img.shields.io/badge/Cloudflare-Workers-orange?style=for-the-badge&logo=cloudflare" />
+  <img src="https://img.shields.io/badge/Python-Reverse_Proxy-blue?style=for-the-badge&logo=python" />
+  <img src="https://img.shields.io/badge/Node.js-Dashboard-green?style=for-the-badge&logo=node.js" />
+  <img src="https://img.shields.io/badge/Zero_Trust-Architecture-success?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=for-the-badge" />
+</p>
 
-Cloudflare Workers
-Cloudflare Tunnel
-Custom reverse proxy enforcement
-HMAC request authentication
-KV-based replay protection
-Layered WAF enforcement
+---
 
-The platform protects internal dashboards, APIs, login systems, and administrative services without exposing origin infrastructure publicly.
+# 📦 Overview
 
-🧠 Core Architecture
+GateKeeper is a lightweight but enterprise-grade distributed edge authentication and secure application access platform built using:
+
+- Cloudflare Workers
+- Cloudflare Tunnel
+- Custom reverse proxy enforcement
+- HMAC request authentication
+- KV-based replay protection
+- Multi-layer WAF enforcement
+
+The platform protects dashboards, APIs, login systems, and administrative services without exposing origin infrastructure publicly.
+
+---
+
+# 🧠 Core Architecture
+
+```text
 Internet
    │
    ▼
@@ -69,11 +88,19 @@ Internet
                  ▼
      ┌───────────┼───────────┐
      ▼           ▼           ▼
+
  localhost   localhost   localhost
+
    :8080       :8081       :8082
 
  Dashboard   Login/Auth      APIs
-🔁 Full Request Lifecycle
+```
+
+---
+
+# 🔁 Full Request Lifecycle
+
+```text
 1. Request enters Cloudflare Edge
 2. WAF threat inspection executes
 3. Geo restrictions evaluated
@@ -89,74 +116,115 @@ Internet
 13. Secure Origin Gateway validates headers
 14. Internal application selected
 15. Response securely returned
-🛡️ Multi-Layer Threat Inspection Engine
+```
+
+---
+
+# 🛡️ Multi-Layer Threat Inspection Engine
 
 GateKeeper includes layered edge security enforcement before requests reach protected services.
 
-WAF Enforcement Rules
+## WAF Enforcement Rules
+
+```text
 Rule 1 → Path Validation
 Rule 2 → Geo Restriction
 Rule 3 → ASN Intelligence Blocking
 Rule 4 → Bot Detection
 Rule 5 → AI Crawler Filtering
-Security Capabilities
-SQL injection filtering
-XSS detection
-Path traversal protection
-AI crawler blocking
-ASN intelligence filtering
-Country restrictions
-Threat scoring
-Replay protection
-Rate limiting
-Suspicious request analysis
-🔐 Cryptographically Signed Request Authentication
+```
+
+## Security Capabilities
+
+- SQL injection filtering
+- XSS detection
+- Path traversal protection
+- AI crawler blocking
+- ASN intelligence filtering
+- Country restrictions
+- Threat scoring
+- Replay protection
+- Rate limiting
+- Suspicious request analysis
+
+---
+
+# 🔐 Cryptographically Signed Request Authentication
 
 Every protected request is validated using HMAC SHA-256 signed headers.
 
-Required Headers
+## Required Headers
+
+```text
 X-Client-Key
 X-Signature
 X-Timestamp
 X-Nonce
-Signature Payload
+```
+
+## Signature Payload
+
+```text
 METHOD:PATH:TIMESTAMP:NONCE
-Validation Pipeline
+```
+
+## Validation Pipeline
+
+```text
 1. Client generates HMAC signature
 2. Worker reconstructs payload
 3. Signature verified using SECRET_KEY
 4. Timestamp freshness checked
 5. Nonce uniqueness validated
 6. Request authorized
-🔄 Replay Protection Engine
+```
+
+---
+
+# 🔄 Replay Protection Engine
 
 GateKeeper prevents replay attacks using KV-backed nonce validation.
 
-Flow
+## Flow
+
+```text
 1. Unique nonce generated per request
 2. Nonce stored temporarily in KV
 3. Reuse attempt detected
 4. Request immediately blocked
-KV Namespace Usage
+```
+
+## KV Namespace Format
+
+```text
 nonce:${clientId}:${nonce}
-🔑 One-Time Access Engine
+```
+
+---
+
+# 🔑 One-Time Access Engine
 
 GateKeeper includes dynamic temporary access URL management.
 
-Features
-Temporary secure URLs
-Expiration enforcement
-Usage limits
-Dynamic revocation
-Redirect path control
-Custom identifiers
-KV-based persistence
-🌐 Zero-Trust Tunnel Isolation
+## Features
+
+- Temporary secure URLs
+- Expiration enforcement
+- Usage limits
+- Dynamic revocation
+- Redirect path control
+- Custom identifiers
+- KV-based persistence
+
+---
+
+# 🌐 Zero-Trust Tunnel Isolation
 
 Origin infrastructure is never publicly exposed.
 
 All requests must traverse:
 
+```text
 Cloudflare Edge
         ↓
 Threat Inspection Engine
@@ -168,31 +236,53 @@ Cloudflare Tunnel
 Secure Origin Gateway
         ↓
 Protected Internal Services
-🔄 Trusted Origin Enforcement
+```
+
+---
+
+# 🔄 Trusted Origin Enforcement
 
 The Secure Origin Gateway validates trusted edge traffic before forwarding requests internally.
 
-Trusted Headers
+## Trusted Headers
+
+```text
 X-CDN-Verified
 X-CDN-Client-ID
-Origin Validation
+```
+
+## Origin Validation
 
 The reverse proxy only accepts:
 
-authenticated Worker traffic
-trusted tunnel requests
-validated edge headers
-approved internal routes
-📡 Public Endpoints
-Public Routes
+- authenticated Worker traffic
+- trusted tunnel requests
+- validated edge headers
+- approved internal routes
+
+---
+
+# 📡 Public Endpoints
+
+## Public Routes
+
+```text
 /health
 /status
 /robots.txt
-Authentication Routes
+```
+
+## Authentication Routes
+
+```text
 /api/auth/token
 /auth/callback
 /auth/logout
-Admin Routes
+```
+
+## Admin Routes
+
+```text
 /admin/stats
 /admin/clients
 /admin/tokens
@@ -200,12 +290,23 @@ Admin Routes
 /admin/otp/update
 /admin/otp/revoke
 /admin/otp/status
-Protected Routes
+```
+
+## Protected Routes
+
+```text
 /
 /dashboard
 /protected/*
-🔑 OTP Administration Examples
-Create OTP
+```
+
+---
+
+# 🔑 OTP Administration Examples
+
+## Create OTP
+
+```bash
 curl -X POST https://login.support-noreply.help/admin/otp/create \
   -H "X-Admin-Token: $ADMIN_TOKEN" \
   -d '{
@@ -215,49 +316,131 @@ curl -X POST https://login.support-noreply.help/admin/otp/create \
     "redirectPath": "/testing",
     "customId": "testing"
   }'
-Check OTP Status
+```
+
+## Check OTP Status
+
+```bash
 curl -H "X-Admin-Token: $ADMIN_TOKEN" \
 "https://login.support-noreply.help/admin/otp/status?custom_id=testing"
-Revoke OTP
+```
+
+## Reset Usage Count
+
+```bash
+curl -X POST https://login.support-noreply.help/admin/otp/update \
+  -H "X-Admin-Token: $ADMIN_TOKEN" \
+  -d '{"custom_id":"testing","action":"reset_uses","value":1}'
+```
+
+## Extend Expiry
+
+```bash
+curl -X POST https://login.support-noreply.help/admin/otp/update \
+  -H "X-Admin-Token: $ADMIN_TOKEN" \
+  -d '{"custom_id":"testing","action":"extend","value":500}'
+```
+
+## Change Redirect Path
+
+```bash
+curl -X POST https://login.support-noreply.help/admin/otp/update \
+  -H "X-Admin-Token: $ADMIN_TOKEN" \
+  -d '{"custom_id":"testing","action":"change_path","value":"/new-path"}'
+```
+
+## Revoke OTP
+
+```bash
 curl -X POST https://login.support-noreply.help/admin/otp/revoke \
   -H "X-Admin-Token: $ADMIN_TOKEN" \
   -d '{"custom_id":"testing"}'
-⚙️ Environment Variables
-SECRET_KEY
+```
 
-Generate secure HMAC key:
+---
 
+# ⚙️ Environment Variables
+
+## Generate SECRET_KEY
+
+```bash
 openssl rand -base64 32
+```
 
-Store as plain text:
+## SECRET_KEY
 
+```env
 SECRET_KEY=base64secret
-ALLOWED_CLIENTS
+```
 
-Store as JSON array:
+## ALLOWED_CLIENTS
 
+```json
 ["client-1","client-2"]
-AUTH_ENABLED
+```
+
+## AUTH_ENABLED
+
+```env
 AUTH_ENABLED=true
-🌍 Domain Architecture
-Public Access Domain
-https://login.support-noreply.help
-Tunnel Endpoint
-https://tunnel-login.support-noreply.help
-Worker Development Subdomain
-support.zvrrobert.workers.dev
-🚇 Cloudflare Tunnel Setup
-Create Tunnel
+```
+
+---
+
+# 🚇 Cloudflare Tunnel Setup
+
+## Create Tunnel
+
+```bash
 cloudflared tunnel create login-tunnel
-Start Tunnel
+```
+
+## Start Tunnel
+
+```bash
 cloudflared tunnel \
 --url http://localhost:8083 \
 --credentials-file /root/.cloudflared/4c2a22a5-6e3c-4dd8-b949-2d6b2405bbeb.json \
 run 16864092-365a-428b-b8d4-46afc93e9c17
-⚡ Service Startup
-Start Dashboard Service
+```
+
+---
+
+# ⚡ Start Services
+
+## Start Dashboard Service
+
+```bash
 node webserver.js
-📁 Repository Structure
+```
+
+---
+
+# 🌍 Domain Architecture
+
+## Public Access Domain
+
+```text
+https://login.support-noreply.help
+```
+
+## Tunnel Endpoint
+
+```text
+https://tunnel-login.support-noreply.help
+```
+
+## Worker Development Subdomain
+
+```text
+support.zvrrobert.workers.dev
+```
+
+---
+
+# 📁 Repository Structure
+
+```text
 GateKeeper/
 │
 ├── README.md
@@ -273,7 +456,13 @@ GateKeeper/
 ├── request-flow.txt
 ├── deployment.txt
 └── endpoints.txt
-🧩 Trust Boundaries
+```
+
+---
+
+# 🧩 Trust Boundaries
+
+```text
 Boundary 1:
 Internet → Cloudflare Edge
 
@@ -288,10 +477,17 @@ Tunnel → Secure Origin Gateway
 
 Boundary 5:
 Gateway → Internal Applications
-📜 License
+```
+
+---
+
+# 📜 License
 
 MIT License
 
+---
+
+```text
 ╔══════════════════════════════════════════════════════════╗
 ║                                                          ║
 ║          GateKeeper — Secure the Edge                    ║
@@ -299,3 +495,4 @@ MIT License
 ║      Distributed Zero-Trust Access Infrastructure        ║
 ║                                                          ║
 ╚══════════════════════════════════════════════════════════╝
+```
