@@ -1,203 +1,260 @@
-GateKeeper – Enterprise Edge Security Gateway
-Protect your web applications at Cloudflare’s edge with multi‑layer WAF, HMAC authentication, OTP‑protected URLs, and a secure reverse proxy tunnel.
-Designed for zero‑trust access, API protection, and admin panel shielding – without exposing your origin server.
+GateKeeper – Edge Security Gateway
 
-🚀 Why GateKeeper?
-Challenge	GateKeeper Solution
-Publicly exposed admin panels	Block all traffic except authenticated clients
-API abuse & credential stuffing	HMAC‑signed requests + OTP‑based one‑time URLs
-No control over bot/AI crawlers	5‑layer WAF (SQLi, XSS, path traversal, bad bots, AI bots)
-Complex VPN or IP whitelisting	Zero‑trust edge authentication via Cloudflare Workers
-On‑prem services behind NAT	Secure Cloudflare Tunnel → local reverse proxy
-✅ No public IP required – Works behind any firewall.
-✅ Deploy in minutes – Simple config files and environment variables.
-✅ Low latency – Cloudflare’s global network (300+ PoPs).
-✅ Cost‑effective – Use free Cloudflare plan + Workers paid tier (pay per use).
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                                                                           ║
+║   ██████╗  █████╗ ████████╗███████╗██╗  ██╗███████╗███████╗██████╗ ██████╗ ║
+║   ██╔════╝ ██╔══██╗╚══██╔══╝██╔════╝██║ ██╔╝██╔════╝██╔════╝██╔══██╗██╔══██╗║
+║   ██║  ███╗███████║   ██║   █████╗  █████╔╝ █████╗  █████╗  ██████╔╝██████╔╝║
+║   ██║   ██║██╔══██║   ██║   ██╔══╝  ██╔═██╗ ██╔══╝  ██╔══╝  ██╔══██╗██╔══██╗║
+║   ╚██████╔╝██║  ██║   ██║   ███████╗██║  ██╗███████╗███████╗██║  ██║██║  ██║║
+║    ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝║
+║                                                                           ║
+║                 Enterprise Edge Security Gateway                          ║
+║             5‑Layer WAF · HMAC Auth · OTP URLs · Zero‑Trust Tunnel        ║
+╚═══════════════════════════════════════════════════════════════════════════╝
 
-📋 Prerequisites
-Requirement	Details
-Domain	Any domain managed by Cloudflare (e.g., support-noreply.help)
-Cloudflare Account	Free, Pro, or Business – Workers & Tunnels available on all plans
-Server (Local)	Linux (Ubuntu 20.04+, Debian 11+, CentOS 8+, Fedora) or macOS (for dev)
-Node.js	v16+ (for web server)
-Python	3.8+ (for reverse proxy)
-Cloudflared	Latest version (download)
-OpenSSL	For generating HMAC keys
-💡 OS Support: Linux (production), macOS (testing), Windows (WSL2 recommended).
+📦 What is GateKeeper?
+GateKeeper is a production‑ready edge security gateway that runs on Cloudflare’s global network.
+It protects any web application (internal API, admin panel, dashboard) by enforcing:
 
-🧩 Components & Their Roles
-Component	Purpose	Tech Stack
-Cloudflare WAF (5 rules)	Block malicious patterns at edge	Managed rules + custom filters
-Cloudflare Worker	Edge authentication, OTP generation, request signing	JavaScript/TypeScript + KV store
-Cloudflare Tunnel	Secure outbound connection to local server	cloudflared
-Python Reverse Proxy	Route traffic to different backend services	Python 3 + Flask/FastAPI
-Node Web Server	Serve dashboard, health, admin stats	Express.js
-⚙️ Configuration Files
-1. Environment Variables (Cloudflare Worker)
-Set these in your Worker’s Settings → Variables:
+🔒 Zero‑trust authentication at the edge (HMAC + OTP)
 
-Variable	Type	Example	Description
-SECRET_KEY	plain text	7Kj9xPm2Qw8Rt5Yv3Nc6Lb1Xz4Fh7Ud9Aa2Ew5Rg8Ty=	HMAC signing key (generate with openssl rand -base64 32)
-ALLOWED_CLIENTS	JSON string	["client-1","client-2"]	Valid client IDs for HMAC
-ADMIN_TOKEN	plain text	admin-super-secret-token	Token for admin endpoints (/admin/*)
-AUTH_ENABLED	boolean	true	Enable/disable authentication
-KV_NAMESPACE	binding	TOKEN_STORE	Bind a KV namespace for OTP storage
+🛡️ 5 WAF rules (SQLi, XSS, path traversal, bad bots, AI bots)
+
+🔄 Secure reverse proxy with Cloudflare Tunnel
+
+🧩 Modular backend routing via Python reverse proxy
+
+🔑 One‑time URL (OTP) creator for temporary access
+
+No public IP required. Works behind NAT, firewalls, or dynamic IPs.
+
+🚦 Quick Start (5 minutes)
+bash
+# 1. Clone the repository
+git clone https://github.com/your-org/gatekeeper.git
+cd gatekeeper
+
+# 2. Generate HMAC secret key
+openssl rand -base64 32
+
+# 3. Create Cloudflare Tunnel
+cloudflared tunnel create login-tunnel
+
+# 4. Start all services (using provided scripts)
+./scripts/deploy.sh
+👉 Detailed instructions below.
+
+🧠 Architecture Overview
+text
+┌─────────────────────────────────────────────────────────────────┐
+│                         PUBLIC INTERNET                          │
+│                   https://app.yourdomain.com                    │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     CLOUDFLARE EDGE NETWORK                      │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │  WAF RULES (5)                                            │  │
+│  │  • SQL Injection  • XSS  • Path traversal                │  │
+│  │  • Bad bots      • AI bots (GPTBot, CCBot, etc.)         │  │
+│  └───────────────────────────────┬───────────────────────────┘  │
+│                                  ▼                               │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │  CLOUDFLARE WORKER (Edge Auth)                            │  │
+│  │  • HMAC signature verification                           │  │
+│  │  • OTP creation / validation (KV store)                  │  │
+│  │  • Admin token checks                                     │  │
+│  └───────────────────────────────┬───────────────────────────┘  │
+│                                  ▼                               │
+│                    tunnel.app.yourdomain.com                     │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │  CLOUDFLARE TUNNEL (cloudflared)                          │  │
+│  └───────────────────────────────┬───────────────────────────┘  │
+└────────────────────────────────────┼─────────────────────────────┘
+                                     │
+                                     ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                     YOUR LOCAL INFRASTRUCTURE                    │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │  PYTHON REVERSE PROXY (port 8083)                         │  │
+│  │  Routes:                                                   │  │
+│  │    /    → Node web server (port 8080)                     │  │
+│  │    /auth → Login pages (port 8081)                        │  │
+│  │    /api  → API backend (port 8082)                        │  │
+│  └───────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+📋 Prerequisites (Matrix)
+Requirement	Version / Condition
+Domain	Any domain managed by Cloudflare
+Cloudflare Account	Free, Pro, or Business
+Local Server OS	Ubuntu 20.04+, Debian 11+, CentOS 8+, Fedora, or macOS (dev)
+Node.js	≥ v16
+Python	≥ 3.8
+Cloudflared	Latest
+OpenSSL	Any version
+💡 Windows users: Use WSL2 with Ubuntu 22.04 for production‑like deployment.
+
+⚙️ Configuration Files (3 essential)
+1. Worker Environment Variables
+Set in Cloudflare Dashboard → Worker → Settings → Variables:
+
+Variable	Type	Example Value
+SECRET_KEY	plain text	7Kj9xPm2Qw8Rt5Yv3Nc6Lb1Xz4Fh7Ud9Aa2Ew5Rg8Ty=
+ALLOWED_CLIENTS	JSON string	["client-1","client-2"]
+ADMIN_TOKEN	plain text	super-strong-admin-token
+AUTH_ENABLED	boolean	true
+KV_NAMESPACE	binding	TOKEN_STORE
+
+
 2. Reverse Proxy Config (/opt/reverse-proxy/config.json)
-json
+
 {
   "listen_port": 8083,
   "routes": [
-    {
-      "path_prefix": "/",
-      "target": "http://localhost:8080",
-      "description": "Node dashboard"
-    },
-    {
-      "path_prefix": "/auth",
-      "target": "http://localhost:8081",
-      "description": "Login pages"
-    },
-    {
-      "path_prefix": "/api",
-      "target": "http://localhost:8082",
-      "description": "API backend"
-    }
+    { "path_prefix": "/", "target": "http://localhost:8080" },
+    { "path_prefix": "/auth", "target": "http://localhost:8081" }
   ],
   "require_cdn_header": true,
-  "cdn_header_name": "X-CDN-Verified",
-  "log_level": "info"
+  "cdn_header_name": "X-CDN-Verified"
 }
-3. Cloudflare Tunnel Config (~/.cloudflared/config.yml)
-yaml
-tunnel: 16864092-365a-428b-b8d4-46afc93e9c17
-credentials-file: /root/.cloudflared/4c2a22a5-6e3c-4dd8-b949-2d6b2405bbeb.json
 
+
+
+3. Tunnel Config (~/.cloudflared/config.yml)
+
+
+tunnel: YOUR_TUNNEL_ID
+credentials-file: /path/to/credentials.json
 ingress:
-  - hostname: tunnel-login.support-noreply.help
+  - hostname: tunnel.app.yourdomain.com
     service: http://localhost:8083
   - service: http_status:404
-🔧 Installation & Deployment (5 Steps)
-Step 1 – Generate HMAC Key & Setup Worker
+
+
+
+🛠️ Installation & Deployment (5 Steps)
+
+Step 1 — Generate HMAC key & create Worker
 bash
 openssl rand -base64 32
-# Copy output → set as SECRET_KEY in Cloudflare Worker
-Create a Worker, bind a KV namespace (TOKEN_STORE), and add environment variables (see table above).
+# Copy the output -> set as SECRET_KEY in Cloudflare Worker
+Create a Worker, bind a KV namespace (TOKEN_STORE), and add all environment variables from the table above.
 
-Step 2 – Create Cloudflare Tunnel
+Step 2 — Set up Cloudflare Tunnel
 bash
-cloudflared tunnel create login-tunnel
-# Save the tunnel ID and credentials file path
+cloudflared tunnel create edge-gateway
+# Save tunnel ID and credentials file path
 Add a CNAME record in your Cloudflare DNS:
 
 text
-tunnel-login.support-noreply.help  CNAME  <tunnel-id>.cfargotunnel.com
-Step 3 – Configure Reverse Proxy & Backend Services
-Place config.json in /opt/reverse-proxy/
-
-Install Python deps: pip install flask pyyaml
-
-Start reverse proxy:
-
+tunnel.app.yourdomain.com  CNAME  <tunnel-id>.cfargotunnel.com
+Step 3 — Configure and start local services
 bash
-python3 /opt/reverse-proxy/proxy.py --config /opt/reverse-proxy/config.json
-Start Node web server:
+# Reverse proxy
+cd /opt/reverse-proxy
+pip install -r requirements.txt
+python3 proxy.py --config config.json &
 
-bash
-node /opt/webserver.js   # runs on port 8080
-(Optional) Start login pages on another port (e.g., 8081)
+# Node web server
+node /opt/webserver.js &   # runs on port 8080
 
-Step 4 – Run Tunnel
+# (Optional) Login pages on port 8081
+Step 4 — Run the tunnel
 bash
 cloudflared tunnel --url http://localhost:8083 \
-  --credentials-file /root/.cloudflared/4c2a22a5-6e3c-4dd8-b949-2d6b2405bbeb.json \
-  run 16864092-365a-428b-b8d4-46afc93e9c17 &
-Make it persistent using systemd (see Cloudflare docs).
+  --credentials-file /root/.cloudflared/creds.json \
+  run YOUR_TUNNEL_ID &
+For persistence, install as a systemd service (docs
 
-Step 5 – Set Worker Route
-In Cloudflare Dashboard → Workers & Pages → your Worker → Triggers → Add route:
+
+
+Step 5 — Route traffic to Worker
+In Cloudflare Dashboard → Worker → Triggers → Add route:
 
 text
-login.support-noreply.help/*
-(Replace with your custom domain.)
+app.yourdomain.com/*
+🎉 Your edge gateway is live!
 
-🎉 Done! Your edge gateway is live.
+🧪 Testing Commands
+bash
+# Public health check
+curl https://app.yourdomain.com/health
 
-🧪 Testing the Deployment
-Health Check (public)
-bash
-curl https://login.support-noreply.help/health
-Obtain an OTP (admin only)
-bash
-curl -X POST https://login.support-noreply.help/admin/otp/create \
+# Admin: create an OTP
+curl -X POST https://app.yourdomain.com/admin/otp/create \
   -H "X-Admin-Token: $ADMIN_TOKEN" \
-  -d '{"clientId":"client-1","expiresIn":300,"maxUses":1,"redirectPath":"/dashboard"}'
-Access protected resource using OTP
-bash
-curl -H "X-OTP-Token: <otpId>" https://login.support-noreply.help/dashboard
-Admin stats
-bash
-curl -H "X-Admin-Token: $ADMIN_TOKEN" https://login.support-noreply.help/admin/stats
-📊 Sales Funnel – Why Buy/Use GateKeeper?
-Funnel Stage	Message
-Awareness	Stop exposing your internal tools – secure them at the edge.
-Interest	5 WAF rules + HMAC auth + OTP URLs + tunnel to any local service.
-Desire	Works with existing infrastructure, no public IP needed, 5‑min setup.
-Action	Clone the repo, run a single script, and start protecting in minutes.
+  -d '{"clientId":"client-1","expiresIn":300,"maxUses":1}'
+
+# Access protected resource using OTP
+curl -H "X-OTP-Token: <otp-id>" https://app.yourdomain.com/dashboard
+
+# Admin stats
+curl -H "X-Admin-Token: $ADMIN_TOKEN" https://app.yourdomain.com/admin/stats
+📊 Sales Funnel (Why GateKeeper?)
+Stage	Message
+Awareness	Exposing internal tools? Attackers scan for admin panels every second.
+Interest	5 WAF rules + edge HMAC auth + OTP URLs + tunnel to any local service.
+Desire	Works with your existing stack, no public IP needed, deploys in 5 minutes.
+Action	Clone, configure, deploy – see the “Quick Start” above.
+🔐 Security Hardening Checklist
+SECRET_KEY – 32+ random bytes, rotated quarterly
+
+ADMIN_TOKEN – 32+ characters, stored in Worker secrets
+
+KV namespace – restrict access to the Worker only
+
+Cloudflare WAF managed rules – enabled (free)
+
+Rate limiting – 100 requests/minute per client
+
+OTP expiry – ≤ 5 minutes
+
+Reverse proxy – runs as non‑root user
+
+Cloudflared – auto‑updated via systemd
+
 📁 Repository Structure
 text
 gatekeeper/
 ├── worker/
-│   ├── src/index.js          # Cloudflare Worker code
-│   ├── wrangler.toml         # Worker configuration
-│   └── kv-schema.json        # KV store schema
+│   ├── src/index.js           # Edge authentication & OTP logic
+│   ├── wrangler.toml          # Worker configuration
+│   └── kv-schema.json         # KV namespace schema
 ├── reverse-proxy/
-│   ├── proxy.py              # Python reverse proxy
-│   └── config.json           # Route configuration
+│   ├── proxy.py               # Python route dispatcher
+│   └── config.json            # Backend route definitions
 ├── webserver/
-│   └── webserver.js          # Node.js dashboard server
+│   └── webserver.js           # Node.js dashboard + admin API
 ├── scripts/
-│   ├── setup-tunnel.sh       # Helper script for tunnel creation
-│   └── generate-keys.sh      # HMAC key generator
+│   ├── deploy.sh              # One‑click deployment script
+│   └── generate-keys.sh       # HMAC & tunnel key helper
 ├── docs/
-│   └── architecture.png      # Network diagram
-├── README.md                 # This file
-└── LICENSE
+│   └── architecture.png       # Visual diagram
+├── README.md                  # This file
+└── LICENSE                    # MIT
 🛠️ Supported Operating Systems
-OS	Version	Notes
-Ubuntu	20.04, 22.04, 24.04	Fully tested
-Debian	11, 12	Works with systemd
-CentOS / RHEL	8, 9	Requires EPEL for cloudflared
-Fedora	37+	Native packages
-macOS	12+	For local testing only
-Windows (WSL2)	Ubuntu 22.04	Use WSL2 for production-like env
-Production recommendation: Linux (Ubuntu 22.04 LTS).
+OS	Version	Production Ready
+Ubuntu	20.04, 22.04, 24.04	✅ Fully tested
+Debian	11, 12	✅
+CentOS / RHEL	8, 9	✅ (EPEL required)
+Fedora	37+	✅
+macOS	12+	⚠️ Dev only
+Windows (WSL2)	Ubuntu 22.04	✅ Recommended for Windows
+🤝 Support & Community
+🐛 GitHub Issues
 
-🔐 Security Hardening Checklist
-Rotate SECRET_KEY regularly
+💬 Discord
 
-Use strong ADMIN_TOKEN (32+ random chars)
-
-Restrict KV namespace access to the Worker only
-
-Enable Cloudflare WAF managed rules (free add‑on)
-
-Set rate limits (e.g., 100 req/min) in Worker
-
-Use short OTP expiry (max 5 minutes)
-
-Run reverse proxy as non‑root user
-
-Keep cloudflared updated
-
-📞 Support & Community
-Issues: GitHub Issues
-
-Discord: Join our server
-
-Email: security@gatekeeper.io
+📧 security@gatekeeper.io
 
 📄 License
-MIT – Use freely, modify, and distribute.
+MIT – Use, modify, and distribute freely.
+Attribution appreciated but not required.
 
-GateKeeper – The last line of defense before your origin.
-Built with ☁️ Cloudflare, ❤️ open source.
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                     GateKeeper – Secure the Edge                          ║
+║          Built with ☁️ Cloudflare, Node.js, Python, and ❤️ open source    ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
