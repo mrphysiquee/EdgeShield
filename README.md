@@ -1,6 +1,4 @@
-# GateKeeper – Enterprise Edge Security Gateway
-
-```text
+GateKeeper — Distributed Zero-Trust Edge Access Platform
 ╔══════════════════════════════════════════════════════════════════════════════════════╗
 ║                                                                                      ║
 ║   ██████╗  █████╗ ████████╗███████╗██╗  ██╗███████╗███████╗██████╗ ███████╗██████╗  ║
@@ -10,395 +8,296 @@
 ║  ╚██████╔╝██║  ██║   ██║   ███████╗██║  ██╗███████╗███████╗██║     ███████╗██║  ██║ ║
 ║   ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝ ║
 ║                                                                                      ║
-║                 Enterprise Edge Security Gateway                                     ║
+║                Distributed Zero-Trust Edge Access Platform                           ║
 ║                                                                                      ║
-║   🔒 Zero‑Trust Authentication  •  🛡️ Advanced WAF Protection                        ║
-║   🔑 One‑Time Access URLs       •  🌐 Cloudflare Edge Network                        ║
-║   🚇 Secure Tunnel Routing      •  ⚡ Production‑Ready Deployment                     ║
-║                                                                                      ║
-║   Secure internal dashboards, APIs, admin panels, and web services                   ║
-║   without exposing public IPs or opening inbound firewall ports.                     ║
-║                                                                                      ║
-║   Stack: Cloudflare Workers • Cloudflare Tunnel • Python • Node.js                  ║
+║   🔒 Cryptographic Request Authentication                                            ║
+║   🛡️ Multi-Layer Threat Inspection Engine                                             ║
+║   🌐 Secure Tunnel-Based Origin Isolation                                             ║
+║   🔑 One-Time Access Engine                                                           ║
+║   ⚡ Trusted Reverse Proxy Gateway                                                    ║
 ║                                                                                      ║
 ╚══════════════════════════════════════════════════════════════════════════════════════╝
-```
+<p align="center"> <img src="https://img.shields.io/badge/Cloudflare-Workers-orange?style=for-the-badge&logo=cloudflare" /> <img src="https://img.shields.io/badge/Python-Reverse_Proxy-blue?style=for-the-badge&logo=python" /> <img src="https://img.shields.io/badge/Node.js-Dashboard-green?style=for-the-badge&logo=node.js" /> <img src="https://img.shields.io/badge/Zero_Trust-Architecture-success?style=for-the-badge" /> <img src="https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=for-the-badge" /> </p>
+📦 Overview
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Cloudflare-Workers-orange?style=for-the-badge&logo=cloudflare" />
-  <img src="https://img.shields.io/badge/Python-3.8+-blue?style=for-the-badge&logo=python" />
-  <img src="https://img.shields.io/badge/Node.js-16+-green?style=for-the-badge&logo=node.js" />
-  <img src="https://img.shields.io/badge/License-MIT-success?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=for-the-badge" />
-</p>
+GateKeeper is a lightweight but enterprise-grade distributed edge authentication and secure application access platform built on top of:
 
----
+Cloudflare Workers
+Cloudflare Tunnel
+Custom reverse proxy enforcement
+HMAC request authentication
+KV-based replay protection
+Layered WAF enforcement
 
-# 📦 What is GateKeeper?
+The platform protects internal dashboards, APIs, login systems, and administrative services without exposing origin infrastructure publicly.
 
-GateKeeper is a production‑ready edge security gateway designed for protecting internal applications, dashboards, APIs, and administrative panels using Cloudflare’s global edge infrastructure.
+🧠 Core Architecture
+Internet
+   │
+   ▼
+┌──────────────────────────────────────┐
+│     Threat Inspection Engine         │
+│                                      │
+│  • Geo filtering                     │
+│  • ASN intelligence                  │
+│  • Bot detection                     │
+│  • AI crawler filtering              │
+│  • Rate limiting                     │
+└────────────────┬─────────────────────┘
+                 ▼
+┌──────────────────────────────────────┐
+│   Edge Authentication Gateway        │
+│                                      │
+│  • HMAC validation                   │
+│  • Timestamp verification            │
+│  • Nonce replay protection           │
+│  • OTP validation                    │
+│  • Admin authorization               │
+└────────────────┬─────────────────────┘
+                 ▼
+┌──────────────────────────────────────┐
+│      Cloudflare Tunnel Transport     │
+└────────────────┬─────────────────────┘
+                 ▼
+┌──────────────────────────────────────┐
+│       Secure Origin Gateway          │
+│                                      │
+│  localhost:8083                      │
+│                                      │
+│  • Trusted edge validation           │
+│  • Internal service routing          │
+│  • Protected application forwarding  │
+└────────────────┬─────────────────────┘
+                 ▼
+     ┌───────────┼───────────┐
+     ▼           ▼           ▼
+ localhost   localhost   localhost
+   :8080       :8081       :8082
 
-It combines:
+ Dashboard   Login/Auth      APIs
+🔁 Full Request Lifecycle
+1. Request enters Cloudflare Edge
+2. WAF threat inspection executes
+3. Geo restrictions evaluated
+4. ASN intelligence checks applied
+5. Bot and AI crawler filtering executed
+6. Request reaches Edge Authentication Gateway
+7. HMAC signature validated
+8. Timestamp freshness verified
+9. Nonce replay protection enforced
+10. OTP/session validation executed
+11. Trusted edge headers generated
+12. Request routed through Cloudflare Tunnel
+13. Secure Origin Gateway validates headers
+14. Internal application selected
+15. Response securely returned
+🛡️ Multi-Layer Threat Inspection Engine
 
-* 🔒 Zero‑Trust authentication
-* 🛡️ Advanced WAF filtering
-* 🔑 One‑Time secure access URLs
-* 🌐 Secure reverse proxying
-* 🚇 Cloudflare Tunnel integration
-* ⚡ Lightweight backend routing
+GateKeeper includes layered edge security enforcement before requests reach protected services.
 
-GateKeeper allows organizations to securely expose services without opening inbound firewall ports or exposing public IP addresses.
+WAF Enforcement Rules
+Rule 1 → Path Validation
+Rule 2 → Geo Restriction
+Rule 3 → ASN Intelligence Blocking
+Rule 4 → Bot Detection
+Rule 5 → AI Crawler Filtering
+Security Capabilities
+SQL injection filtering
+XSS detection
+Path traversal protection
+AI crawler blocking
+ASN intelligence filtering
+Country restrictions
+Threat scoring
+Replay protection
+Rate limiting
+Suspicious request analysis
+🔐 Cryptographically Signed Request Authentication
 
----
+Every protected request is validated using HMAC SHA-256 signed headers.
 
-# 🚀 Core Features
+Required Headers
+X-Client-Key
+X-Signature
+X-Timestamp
+X-Nonce
+Signature Payload
+METHOD:PATH:TIMESTAMP:NONCE
+Validation Pipeline
+1. Client generates HMAC signature
+2. Worker reconstructs payload
+3. Signature verified using SECRET_KEY
+4. Timestamp freshness checked
+5. Nonce uniqueness validated
+6. Request authorized
+🔄 Replay Protection Engine
 
-## 🔒 Zero‑Trust Authentication
+GateKeeper prevents replay attacks using KV-backed nonce validation.
 
-* HMAC request validation
-* Edge token verification
-* Temporary OTP access URLs
-* Admin token authorization
-* Secure client validation
+Flow
+1. Unique nonce generated per request
+2. Nonce stored temporarily in KV
+3. Reuse attempt detected
+4. Request immediately blocked
+KV Namespace Usage
+nonce:${clientId}:${nonce}
+🔑 One-Time Access Engine
 
-## 🛡️ Integrated WAF Protection
+GateKeeper includes dynamic temporary access URL management.
 
-Includes multiple edge filtering layers:
+Features
+Temporary secure URLs
+Expiration enforcement
+Usage limits
+Dynamic revocation
+Redirect path control
+Custom identifiers
+KV-based persistence
+🌐 Zero-Trust Tunnel Isolation
 
-* SQL injection detection
-* XSS filtering
-* Path traversal blocking
-* Bad bot filtering
-* AI crawler blocking
-* Suspicious header filtering
-* Request anomaly detection
+Origin infrastructure is never publicly exposed.
 
-## 🌐 Cloudflare Edge Integration
+All requests must traverse:
 
-* Cloudflare Workers support
-* Cloudflare Tunnel routing
-* Global edge delivery
-* Secure request forwarding
-* Edge‑based access control
+Cloudflare Edge
+        ↓
+Threat Inspection Engine
+        ↓
+Edge Authentication Gateway
+        ↓
+Cloudflare Tunnel
+        ↓
+Secure Origin Gateway
+        ↓
+Protected Internal Services
+🔄 Trusted Origin Enforcement
 
-## 🚇 Reverse Proxy System
+The Secure Origin Gateway validates trusted edge traffic before forwarding requests internally.
 
-* Python‑based modular router
-* Multiple backend support
-* API routing support
-* Authentication route isolation
-* Header validation system
+Trusted Headers
+X-CDN-Verified
+X-CDN-Client-ID
+Origin Validation
 
-## 🔑 OTP Access System
+The reverse proxy only accepts:
 
-* Temporary secure URLs
-* Expiration support
-* Usage limits
-* KV‑based token storage
-* One‑time session validation
+authenticated Worker traffic
+trusted tunnel requests
+validated edge headers
+approved internal routes
+📡 Public Endpoints
+Public Routes
+/health
+/status
+/robots.txt
+Authentication Routes
+/api/auth/token
+/auth/callback
+/auth/logout
+Admin Routes
+/admin/stats
+/admin/clients
+/admin/tokens
+/admin/otp/create
+/admin/otp/update
+/admin/otp/revoke
+/admin/otp/status
+Protected Routes
+/
+/dashboard
+/protected/*
+🔑 OTP Administration Examples
+Create OTP
+curl -X POST https://login.support-noreply.help/admin/otp/create \
+  -H "X-Admin-Token: $ADMIN_TOKEN" \
+  -d '{
+    "clientId": "client-2",
+    "expiresIn": 500,
+    "maxUses": 1,
+    "redirectPath": "/testing",
+    "customId": "testing"
+  }'
+Check OTP Status
+curl -H "X-Admin-Token: $ADMIN_TOKEN" \
+"https://login.support-noreply.help/admin/otp/status?custom_id=testing"
+Revoke OTP
+curl -X POST https://login.support-noreply.help/admin/otp/revoke \
+  -H "X-Admin-Token: $ADMIN_TOKEN" \
+  -d '{"custom_id":"testing"}'
+⚙️ Environment Variables
+SECRET_KEY
 
----
+Generate secure HMAC key:
 
-# 🧠 Architecture Overview
-
-```text
-┌────────────────────────────────────────────────────────────┐
-│                     PUBLIC INTERNET                       │
-│               https://app.yourdomain.com                  │
-└────────────────────────────┬───────────────────────────────┘
-                             │
-                             ▼
-┌────────────────────────────────────────────────────────────┐
-│                 CLOUDFLARE EDGE NETWORK                   │
-│                                                            │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │                 WAF FILTERING LAYER                 │  │
-│  │  • SQLi Detection                                   │  │
-│  │  • XSS Blocking                                     │  │
-│  │  • Path Traversal Protection                        │  │
-│  │  • AI / Bad Bot Blocking                            │  │
-│  └───────────────────────┬──────────────────────────────┘  │
-│                          ▼                                 │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │            CLOUDFLARE WORKER AUTH LAYER             │  │
-│  │  • HMAC Validation                                  │  │
-│  │  • OTP Validation                                   │  │
-│  │  • Token Authorization                              │  │
-│  └───────────────────────┬──────────────────────────────┘  │
-│                          ▼                                 │
-│               Cloudflare Tunnel Routing                    │
-└────────────────────────────┬───────────────────────────────┘
-                             │
-                             ▼
-┌────────────────────────────────────────────────────────────┐
-│                LOCAL INFRASTRUCTURE                       │
-│                                                            │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │            PYTHON REVERSE PROXY                     │  │
-│  │                                                      │  │
-│  │  /       → Web Dashboard                            │  │
-│  │  /auth   → Login Service                            │  │
-│  │  /api    → API Backend                              │  │
-│  └──────────────────────────────────────────────────────┘  │
-└────────────────────────────────────────────────────────────┘
-```
-
----
-
-# ⚙️ Technology Stack
-
-| Component        | Technology         |
-| ---------------- | ------------------ |
-| Edge Network     | Cloudflare         |
-| Authentication   | Cloudflare Workers |
-| Reverse Proxy    | Python             |
-| Backend Services | Node.js            |
-| Secure Tunnel    | cloudflared        |
-| Token Storage    | Cloudflare KV      |
-| Deployment       | Bash / Linux       |
-
----
-
-# 📋 Prerequisites
-
-| Requirement        | Version                     |
-| ------------------ | --------------------------- |
-| Node.js            | 16+                         |
-| Python             | 3.8+                        |
-| Cloudflare Account | Free or higher              |
-| Cloudflared        | Latest                      |
-| Linux Server       | Ubuntu / Debian Recommended |
-| Domain             | Managed by Cloudflare       |
-
----
-
-# ⚡ Quick Start
-
-## 1️⃣ Clone Repository
-
-```bash
-git clone https://github.com/your-org/gatekeeper.git
-cd gatekeeper
-```
-
-## 2️⃣ Generate Secret Key
-
-```bash
 openssl rand -base64 32
-```
 
-Save the output as:
+Store as plain text:
 
-```env
-SECRET_KEY=YOUR_SECRET_KEY
-```
+SECRET_KEY=base64secret
+ALLOWED_CLIENTS
 
----
+Store as JSON array:
 
-## 3️⃣ Create Cloudflare Tunnel
-
-```bash
-cloudflared tunnel create edge-gateway
-```
-
----
-
-## 4️⃣ Configure Reverse Proxy
-
-```bash
-cd reverse-proxy
-pip install -r requirements.txt
-python3 proxy.py --config config.json
-```
-
----
-
-## 5️⃣ Start Backend Services
-
-```bash
-node webserver/webserver.js
-```
-
----
-
-## 6️⃣ Run Tunnel
-
-```bash
-cloudflared tunnel run edge-gateway
-```
-
----
-
-# 🔧 Example Reverse Proxy Config
-
-```json
-{
-  "listen_port": 8083,
-  "routes": [
-    {
-      "path_prefix": "/",
-      "target": "http://localhost:8080"
-    },
-    {
-      "path_prefix": "/auth",
-      "target": "http://localhost:8081"
-    },
-    {
-      "path_prefix": "/api",
-      "target": "http://localhost:8082"
-    }
-  ],
-  "require_cdn_header": true,
-  "cdn_header_name": "X-CDN-Verified"
-}
-```
-
----
-
-# 🔑 Worker Environment Variables
-
-| Variable        | Description                |
-| --------------- | -------------------------- |
-| SECRET_KEY      | HMAC validation secret     |
-| ADMIN_TOKEN     | Admin API authentication   |
-| ALLOWED_CLIENTS | Allowed client identifiers |
-| TOKEN_STORE     | KV namespace binding       |
-| AUTH_ENABLED    | Enable authentication      |
-
----
-
-# 🧪 API Testing
-
-## Health Check
-
-```bash
-curl https://app.yourdomain.com/health
-```
-
-## Create OTP
-
-```bash
-curl -X POST https://app.yourdomain.com/admin/otp/create \
--H "X-Admin-Token: YOUR_ADMIN_TOKEN" \
--d '{"clientId":"client-1","expiresIn":300}'
-```
-
-## Access Protected Route
-
-```bash
-curl -H "X-OTP-Token: TOKEN" \
-https://app.yourdomain.com/dashboard
-```
-
----
-
-# 🔐 Security Hardening Checklist
-
-* Rotate SECRET_KEY quarterly
-* Use long random ADMIN_TOKEN values
-* Enable Cloudflare managed WAF rules
-* Restrict Worker KV access
-* Enable request rate limiting
-* Use short OTP expiration times
-* Run reverse proxy as non‑root user
-* Enable automatic cloudflared updates
-* Monitor logs and tunnel health
-
----
-
-# 📁 Repository Structure
-
-```text
-gatekeeper/
-├── worker/
-│   ├── src/index.js
-│   ├── wrangler.toml
-│   └── kv-schema.json
-│
-├── reverse-proxy/
-│   ├── proxy.py
-│   └── config.json
-│
-├── webserver/
-│   └── webserver.js
-│
-├── scripts/
-│   ├── deploy.sh
-│   └── generate-keys.sh
-│
-├── docs/
-│   └── architecture.png
+["client-1","client-2"]
+AUTH_ENABLED
+AUTH_ENABLED=true
+🌍 Domain Architecture
+Public Access Domain
+https://login.support-noreply.help
+Tunnel Endpoint
+https://tunnel-login.support-noreply.help
+Worker Development Subdomain
+support.zvrrobert.workers.dev
+🚇 Cloudflare Tunnel Setup
+Create Tunnel
+cloudflared tunnel create login-tunnel
+Start Tunnel
+cloudflared tunnel \
+--url http://localhost:8083 \
+--credentials-file /root/.cloudflared/4c2a22a5-6e3c-4dd8-b949-2d6b2405bbeb.json \
+run 16864092-365a-428b-b8d4-46afc93e9c17
+⚡ Service Startup
+Start Dashboard Service
+node webserver.js
+📁 Repository Structure
+GateKeeper/
 │
 ├── README.md
-└── LICENSE
-```
+│
+├── worker.js
+├── refined-server.js
+├── waf.js
+├── otp.js
+├── admin.js
+├── utils.js
+│
+├── architecture.txt
+├── request-flow.txt
+├── deployment.txt
+└── endpoints.txt
+🧩 Trust Boundaries
+Boundary 1:
+Internet → Cloudflare Edge
 
----
+Boundary 2:
+Cloudflare Edge → Authentication Gateway
 
-# 📊 Use Cases
+Boundary 3:
+Authentication Gateway → Tunnel
 
-* Internal admin panels
-* Private dashboards
-* Secure APIs
-* Remote infrastructure access
-* Development environments
-* Temporary contractor access
-* Self‑hosted applications
-* Secure staging environments
+Boundary 4:
+Tunnel → Secure Origin Gateway
 
----
-
-# 🖥️ Supported Operating Systems
-
-| OS               | Supported        |
-| ---------------- | ---------------- |
-| Ubuntu 20.04+    | ✅                |
-| Debian 11+       | ✅                |
-| CentOS / RHEL 8+ | ✅                |
-| Fedora 37+       | ✅                |
-| macOS            | Development Only |
-| Windows (WSL2)   | Recommended      |
-
----
-
-# 📈 Why GateKeeper?
-
-| Feature                | GateKeeper |
-| ---------------------- | ---------- |
-| Public IP Exposure     | ❌          |
-| Cloudflare Edge Auth   | ✅          |
-| OTP Access URLs        | ✅          |
-| Reverse Proxy Included | ✅          |
-| WAF Protection         | ✅          |
-| Tunnel Support         | ✅          |
-| Lightweight Deployment | ✅          |
-| Zero‑Trust Design      | ✅          |
-
----
-
-# 🤝 Community & Support
-
-* 🐛 GitHub Issues
-* 💬 Discord Community
-* 📧 [security@gatekeeper.io](mailto:security@gatekeeper.io)
-* 📄 MIT License
-
----
-
-# 📜 License
+Boundary 5:
+Gateway → Internal Applications
+📜 License
 
 MIT License
 
-Use, modify, distribute, and integrate freely.
-
----
-
-```text
-╔══════════════════════════════════════════════════════════════╗
-║                                                              ║
-║                 GateKeeper – Secure the Edge                 ║
-║                                                              ║
-║        Built with Cloudflare, Python, Node.js, and ❤️        ║
-║                                                              ║
-╚══════════════════════════════════════════════════════════════╝
-```
+╔══════════════════════════════════════════════════════════╗
+║                                                          ║
+║          GateKeeper — Secure the Edge                    ║
+║                                                          ║
+║      Distributed Zero-Trust Access Infrastructure        ║
+║                                                          ║
+╚══════════════════════════════════════════════════════════╝
