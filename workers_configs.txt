@@ -15,7 +15,7 @@
 │                                         │
 │ Name:  SECRET_KEY                       │
 │                                         │
-│ Value: [k3Jh8pL2qW9zX7vR5tY1uI0oP6m...]│ ← Paste plain text
+│ Value: [ ...]│ ← Paste plain text
 │      (NO quotes around it!)             │
 │                                         │
 │ [Save]                                  │
@@ -68,7 +68,7 @@ Enter:
 
 Variable name: SECRET_KEY
 
-Value: k3Jh8pL2qW9zX7vR5tY1uI0oP6mN4bV2cS8xG5jH9fD3 (your generated key)
+Value:  (your generated key)
 
 Click "Save"
 
