@@ -1,3 +1,19 @@
+GateKeeper – Enterprise Edge Security Gateway
+Protect your web applications at Cloudflare’s edge with multi‑layer WAF, HMAC authentication, OTP‑protected URLs, and a secure reverse proxy tunnel.
+Designed for zero‑trust access, API protection, and admin panel shielding – without exposing your origin server.
+
+🚀 Why GateKeeper?
+Challenge	GateKeeper Solution
+Publicly exposed admin panels	Block all traffic except authenticated clients
+API abuse & credential stuffing	HMAC‑signed requests + OTP‑based one‑time URLs
+No control over bot/AI crawlers	5‑layer WAF (SQLi, XSS, path traversal, bad bots, AI bots)
+Complex VPN or IP whitelisting	Zero‑trust edge authentication via Cloudflare Workers
+On‑prem services behind NAT	Secure Cloudflare Tunnel → local reverse proxy
+✅ No public IP required – Works behind any firewall.
+✅ Deploy in minutes – Simple config files and environment variables.
+✅ Low latency – Cloudflare’s global network (300+ PoPs).
+✅ Cost‑effective – Use free Cloudflare plan + Workers paid tier (pay per use).
+
 📋 Prerequisites
 Requirement	Details
 Domain	Any domain managed by Cloudflare (e.g., support-noreply.help)
