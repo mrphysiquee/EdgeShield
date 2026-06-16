@@ -445,17 +445,16 @@ GateKeeper/
 │
 ├── README.md
 │
-├── worker.js
-├── refined-server.js
-├── waf.js
-├── otp.js
+├── Testing_worker.js
+├── with_Kv_worker.js
+|_Without_Kv_worker.js
+├── waf_rules
+├── login_ui.js
 ├── admin.js
-├── utils.js
+├── only_cli_script.js
 │
 ├── architecture.txt
-├── request-flow.txt
-├── deployment.txt
-└── endpoints.txt
+├── workers_configs.txt
 ```
 
 ---
